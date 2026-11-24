@@ -4,6 +4,10 @@
     viAlias = true;
     vimAlias = true;
 
+    extraPackages = with pkgs; [
+      tree-sitter
+    ];
+
     globals = {
       mapleader = " ";
       maplocalleader = "\\";
