@@ -1,5 +1,5 @@
 # nvf module: your editor configuration. Edit here, then rebuild/run the package.
-{
+{pkgs, ...}: {
   config.vim = {
     viAlias = true;
     vimAlias = true;
@@ -83,7 +83,10 @@
       enableTreesitter = true;
       enableFormat = true;
 
-      nix.enable = true;
+      nix = {
+        enable = true;
+        format.enable = false;
+      };
       python.enable = true;
       rust.enable = true;
       lua.enable = true;
@@ -91,6 +94,25 @@
       markdown.enable = true;
     };
 
-    formatter.conform-nvim.enable = true;
+    formatter.conform-nvim = {
+      enable = true;
+      setupOpts = {
+        formatters_by_ft = {
+          nix = ["treefmt" "alejandra"];
+        };
+        default_format_opts.stop_after_first = true;
+
+        formatters = {
+          treefmt = {
+            require_cwd = false;
+          };
+          alejandra.command = "${pkgs.alejandra}/bin/alejandra";
+        };
+        format_on_save = {
+          timeout_ms = 500;
+          lsp_format = "fallback";
+        };
+      };
+    };
   };
 }
