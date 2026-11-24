@@ -1,8 +1,14 @@
 # nvf module: your editor configuration. Edit here, then rebuild/run the package.
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   config.vim = {
     viAlias = true;
     vimAlias = true;
+
+    enableLuaLoader = true;
 
     extraPackages = with pkgs; [
       tree-sitter
@@ -33,6 +39,8 @@
 
     clipboard = {
       enable = true;
+      providers.wl-copy.enable = !pkgs.stdenv.hostPlatform.isDarwin;
+      providers.wl-copy.package = pkgs.wl-clipboard-rs;
       registers = "unnamedplus";
     };
 
@@ -75,22 +83,38 @@
     treesitter = {
       enable = true;
       indent.enable = true;
+      grammars = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
+        git_config
+        git_rebase
+        gitattributes
+        gitcommit
+        gitignore
+      ];
     };
 
     lsp = {
       enable = true;
+      inlayHints.enable = true;
       formatOnSave = true;
       trouble.enable = true;
+      presets.harper.enable = true;
     };
 
     languages = {
       enableTreesitter = true;
       enableFormat = true;
+      enableExtraDiagnostics = true;
+      html.enable = true;
+      html.extraDiagnostics.enable = true;
 
       nix = {
         enable = true;
-        format.enable = false;
+        format.type = ["nixfmt"];
+        lsp.servers = ["nixd"];
       };
+      yaml.enable = true;
+      yaml.lsp.enable = false;
+      yaml.format.enable = false;
       python.enable = true;
       rust.enable = true;
       lua.enable = true;
@@ -100,9 +124,10 @@
 
     formatter.conform-nvim = {
       enable = true;
+      presets.prettier.enable = lib.mkForce false;
       setupOpts = {
         formatters_by_ft = {
-          nix = ["treefmt" "alejandra"];
+          yaml = ["yamlfmt"];
         };
         default_format_opts.stop_after_first = true;
 
@@ -111,11 +136,21 @@
             require_cwd = false;
           };
           alejandra.command = "${pkgs.alejandra}/bin/alejandra";
+          yamlfmt = {
+            command = lib.getExe pkgs.yamlfmt;
+          };
         };
         format_on_save = {
           timeout_ms = 500;
           lsp_format = "fallback";
         };
+      };
+    };
+
+    visuals.fidget-nvim = {
+      enable = true;
+      setupOpts = {
+        notification.override_vim_notify = true;
       };
     };
   };
