@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   config.vim = {
     viAlias = true;
     vimAlias = true;
@@ -58,7 +59,14 @@
     tabline.nvimBufferline.enable = true;
     binds.whichKey.enable = true;
     notify.nvim-notify.enable = true;
-    ui.noice.enable = true;
+    ui.noice = {
+      enable = true;
+      setupOpts = {
+        lsp = {
+          signature.enabled = true;
+        };
+      };
+    };
 
     visuals = {
       nvim-web-devicons.enable = true;
@@ -70,7 +78,7 @@
     autocomplete.blink-cmp = {
       enable = true;
       friendly-snippets.enable = true;
-      setupOpts.signature.enabled = true;
+      setupOpts.signature.enabled = false;
     };
     autopairs.nvim-autopairs.enable = true;
 
@@ -98,6 +106,7 @@
       formatOnSave = true;
       trouble.enable = true;
       presets.harper.enable = true;
+      lspSignature.enable = false;
     };
 
     languages = {
@@ -109,12 +118,14 @@
 
       nix = {
         enable = true;
-        format.type = ["nixfmt"];
-        lsp.servers = ["nixd"];
+        format.type = [ "nixfmt" ];
+        lsp.servers = [ "nixd" ];
       };
-      yaml.enable = true;
-      yaml.lsp.enable = false;
-      yaml.format.enable = false;
+      yaml = {
+        enable = true;
+        lsp.enable = false;
+        format.enable = false;
+      };
       python.enable = true;
       rust.enable = true;
       lua.enable = true;
@@ -127,7 +138,7 @@
       presets.prettier.enable = lib.mkForce false;
       setupOpts = {
         formatters_by_ft = {
-          yaml = ["yamlfmt"];
+          yaml = [ "yamlfmt" ];
         };
         default_format_opts.stop_after_first = true;
 
@@ -147,11 +158,5 @@
       };
     };
 
-    visuals.fidget-nvim = {
-      enable = true;
-      setupOpts = {
-        notification.override_vim_notify = true;
-      };
-    };
   };
 }
